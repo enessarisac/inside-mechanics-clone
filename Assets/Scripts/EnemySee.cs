@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EnemySee : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class EnemySee : MonoBehaviour
         {
             if (EyeScanZ < 40)
             {
-                EyeScanZ += 100 * Time.deltaTime/3;
+                EyeScanZ += 30 * Time.deltaTime;
             }
             else
             {
@@ -23,7 +24,7 @@ public class EnemySee : MonoBehaviour
         {
             if (EyeScanZ > -40)
             {
-                EyeScanZ -= 100 * Time.deltaTime/3;
+                EyeScanZ -= 30 * Time.deltaTime;
             }
             else
             {
@@ -41,6 +42,7 @@ public class EnemySee : MonoBehaviour
             if (hit.transform.gameObject.tag == "Player")
             {
                 Debug.Log(gameObject.name + " CAN see Player");
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
 
         }
