@@ -9,6 +9,7 @@ public class TakeObject : MonoBehaviour
     Rigidbody rb;
     BoxCollider coll;
     public bool isTrigger = false;
+    
     private void Start()
     {
         rb = gameObject.GetComponent<Rigidbody>();
@@ -24,7 +25,6 @@ public class TakeObject : MonoBehaviour
                 isHolding = true;
                 
             }
-          
         }
 
     }

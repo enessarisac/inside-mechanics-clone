@@ -11,7 +11,6 @@ public class CharacterController : MonoBehaviour
     Animator anim;
     Rigidbody rb;
     MoveObject moveObject;
-    public GameObject other;
     public GameObject controll;
     public bool isGround;
     public bool othercont=false;
@@ -19,9 +18,11 @@ public class CharacterController : MonoBehaviour
     private float decimalEnergy=5;
     public int energy;
     public bool canSprint,sprint;
-    
+    TakeObject takeObjects;
+    public GameObject takingObj;
     private void Start()
     {
+        takeObjects=takingObj.GetComponent<TakeObject>();
         anim = gameObject.GetComponent<Animator>();
         moveObject = controll.GetComponent<MoveObject>();
         rb = gameObject.GetComponent<Rigidbody>();
@@ -30,7 +31,7 @@ public class CharacterController : MonoBehaviour
     {
         energy = Mathf.RoundToInt(decimalEnergy);
 
-        if (moveObject.isMine==true)
+        if (moveObject.isMine==true&&takeObjects.isHolding==false)
         {
             Movement();
             
@@ -105,6 +106,11 @@ public class CharacterController : MonoBehaviour
         {
            text.SetActive(false);
         }
+        if(takeObjects.isHolding==true)
+        {
+            PushMovement();
+ 
+        }
     }
     private void OnCollisionStay(Collision collision)
     {
@@ -130,7 +136,6 @@ public class CharacterController : MonoBehaviour
         if (horizontalInput != 0 || verticalInput != 0)
         {
             isRunning = true;
-
         }
         else
         {
@@ -140,13 +145,35 @@ public class CharacterController : MonoBehaviour
         if (Input.GetKey(KeyCode.Space)&&isGround)
         {
             
-            rb.AddForce(Vector3.up * jumpSpeed );
+            rb.AddForce(Vector3.up * jumpSpeed);
         }
         if (movementDirection != Vector3.zero)
         {
             Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
         }
+    }
+    public void PushMovement()
+    {
+       
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+         if(verticalInput>0)
+         {
+          speed=3;
+          isRunning=true;
+         }
+         if(verticalInput<0)
+         {
+          speed=1;
+          isRunning=true;
+         }
+         if(verticalInput==0)
+         {
+          isRunning=false;
+         }
+        
+        transform.Translate(Vector3.forward * verticalInput * speed * Time.deltaTime);
     }
     public void MoveOther()
     {

@@ -27,17 +27,22 @@ public class Runner : MonoBehaviour
     public void Chase()
     {
         transform.LookAt(player);
-             if(Vector3.Distance(transform.position,player.position) >= MinDist){
+        if(Vector3.Distance(transform.position,player.position) >= MinDist)
+        {
      
           transform.position += transform.forward*speed*Time.deltaTime;
          
 
 
-          if(Vector3.Distance(transform.position,player.position) <= MinDist)
+        if(Vector3.Distance(transform.position,player.position) <= MinDist)
               {
-                 Debug.Log("yakalandın");
-    }     
-    }   
+                 Busted();
+              }     
+        }   
+    }
+    public void Busted()
+    {
+        Debug.Log("yakalandın");
     }
 }
 
