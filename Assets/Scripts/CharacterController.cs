@@ -105,15 +105,6 @@ public class CharacterController : MonoBehaviour
         {
            text.SetActive(false);
         }
-            
-
-
-      
-       
-
-        
-
-
     }
     private void OnCollisionStay(Collision collision)
     {
@@ -132,18 +123,13 @@ public class CharacterController : MonoBehaviour
     {
         
         float horizontalInput = Input.GetAxis("Horizontal");
-    float verticalInput = Input.GetAxis("Vertical");
+        float verticalInput = Input.GetAxis("Vertical");
 
         Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput);
         movementDirection.Normalize();
         if (horizontalInput != 0 || verticalInput != 0)
         {
             isRunning = true;
-           
-
-
-
-
 
         }
         else
@@ -166,10 +152,7 @@ public class CharacterController : MonoBehaviour
     {
         othercont = true;
     }
-   
-
-
-}
+   }
          
            
                     
