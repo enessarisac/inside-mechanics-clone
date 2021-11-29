@@ -5,11 +5,9 @@ using UnityEngine;
 public class CharacterController : MonoBehaviour
 {
     public float speed;
-    public float jumpSpeed;
     public float rotationSpeed;
     ClimbPosition climbPosition;
     public GameObject climbPos;
-    public GameObject text;
     Animator anim;
     Rigidbody rb;
     MoveObject moveObject;
@@ -20,7 +18,7 @@ public class CharacterController : MonoBehaviour
     public bool sprint;
     TakeObject takeObjects;
     public GameObject takingObj;
-    GameObject player;
+    BoxCollider coll;
     private void Start()
     {
         climbPosition=climbPos.GetComponent<ClimbPosition>();
@@ -28,6 +26,7 @@ public class CharacterController : MonoBehaviour
         anim = gameObject.GetComponent<Animator>();
         moveObject = controll.GetComponent<MoveObject>();
         rb = gameObject.GetComponent<Rigidbody>();
+        coll=gameObject.GetComponent<BoxCollider>();
     }
     public void Update()
     {
@@ -61,6 +60,11 @@ public class CharacterController : MonoBehaviour
                              speed = 6;
                              
                              anim.SetBool("Sprint",true);
+                             if(Input.GetKeyDown(KeyCode.LeftControl))
+                             {
+                                 anim.SetTrigger("Slide");
+                             }
+                             
                          }
                 
                 }
@@ -83,6 +87,17 @@ public class CharacterController : MonoBehaviour
             PushMovement();
  
         }
+        if(anim.GetCurrentAnimatorStateInfo(0).IsName("Slide")&&slidable==true||hang&& slidable==true)
+                             {
+                                 
+                                 coll.enabled=false;
+                                 rb.useGravity=false;
+                             }
+                             else
+                             {
+                                 coll.enabled=true;
+                                 rb.useGravity=true;
+                             }
         
        
     }
@@ -122,6 +137,7 @@ public class CharacterController : MonoBehaviour
 
             if(!anim.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
             {
+                
               anim.SetTrigger("Jump");
             }
             
@@ -163,9 +179,16 @@ public class CharacterController : MonoBehaviour
         transform.Translate(Vector3.forward * verticalInput * speed * Time.deltaTime);
     }
     public bool trig;
-public bool climb;
+    public bool slidable;
+    public bool climb;
     private void OnTriggerStay(Collider other) 
     {
+         climbPos.transform.position=GameObject.Find("Ledge").transform.position;
+         
+        if(other.gameObject.CompareTag("Slidable"))
+              {
+             slidable=true;
+              }  
         if(other.gameObject.CompareTag("Ledge"))
         {
             
@@ -195,7 +218,8 @@ public bool climb;
                       climb=false;
 
                   }    
-              }  
+              }
+              
                            
         }
     }
@@ -203,6 +227,7 @@ public bool climb;
         trig=false;
         hang=false;
        climb=false;
+       slidable=false;
     }
     public void MoveOther()
     {

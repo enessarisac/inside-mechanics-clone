@@ -5,7 +5,6 @@ using UnityEngine;
 public class Runner : MonoBehaviour
 {
     public Transform player;
-    Enemy enemy;
     public float MaxDist;
     public float MinDist;
     BossTrigger bossTrigger;

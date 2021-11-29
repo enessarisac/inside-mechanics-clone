@@ -10,6 +10,7 @@ TagManager:
   - Enemy
   - Pushable
   - Ledge
+  - Slidable
   layers:
   - Default
   - TransparentFX
