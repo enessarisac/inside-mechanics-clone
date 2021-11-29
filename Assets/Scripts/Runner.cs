@@ -29,11 +29,7 @@ public class Runner : MonoBehaviour
         transform.LookAt(player);
         if(Vector3.Distance(transform.position,player.position) >= MinDist)
         {
-     
           transform.position += transform.forward*speed*Time.deltaTime;
-         
-
-
         if(Vector3.Distance(transform.position,player.position) <= MinDist)
               {
                  Busted();

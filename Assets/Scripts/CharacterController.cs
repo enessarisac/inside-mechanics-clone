@@ -20,6 +20,7 @@ public class CharacterController : MonoBehaviour
     public bool canSprint,sprint;
     TakeObject takeObjects;
     public GameObject takingObj;
+    
     private void Start()
     {
         takeObjects=takingObj.GetComponent<TakeObject>();
@@ -27,8 +28,9 @@ public class CharacterController : MonoBehaviour
         moveObject = controll.GetComponent<MoveObject>();
         rb = gameObject.GetComponent<Rigidbody>();
     }
-    private void Update()
+    public void Update()
     {
+        
         energy = Mathf.RoundToInt(decimalEnergy);
 
         if (moveObject.isMine==true&&takeObjects.isHolding==false)
@@ -58,10 +60,15 @@ public class CharacterController : MonoBehaviour
                sprint = true;
                 if (sprint == true)
                          {
-                             speed = 7;
+                             speed = 6;
                              decimalEnergy -= 1 * Time.deltaTime;
+                             anim.SetBool("Sprint",true);
                          }
                 
+                }
+                if(Input.GetKeyUp(KeyCode.LeftShift))
+                {
+                    sprint=false;
                 }
                 
         }
@@ -92,7 +99,8 @@ public class CharacterController : MonoBehaviour
         }
         if (sprint == false)
         {
-            speed = 5;
+            anim.SetBool("Sprint",false);
+            speed = 3;
         }
         if (!canSprint)
         {
@@ -124,10 +132,11 @@ public class CharacterController : MonoBehaviour
     {
         isGround = false;
     }
-
+        
     public void Movement()
     {
-        
+         anim.SetBool("Push",false);
+          anim.SetBool("Pull",false);
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
@@ -142,10 +151,15 @@ public class CharacterController : MonoBehaviour
             isRunning = false;
         }
         transform.Translate(movementDirection * speed * Time.deltaTime, Space.World);
-        if (Input.GetKey(KeyCode.Space)&&isGround)
+        if (Input.GetKeyDown(KeyCode.Space)&&isGround)
         {
+
+            if(!anim.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
+            {
+              anim.SetTrigger("Jump");
+            }
             
-            rb.AddForce(Vector3.up * jumpSpeed);
+           
         }
         if (movementDirection != Vector3.zero)
         {
@@ -153,28 +167,36 @@ public class CharacterController : MonoBehaviour
             transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
         }
     }
+    
     public void PushMovement()
     {
-       
+        
+        isRunning=false;
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
-         if(verticalInput>0)
+        
+         if(verticalInput>0&&!anim.GetCurrentAnimatorStateInfo(0).IsName("Push"))
          {
           speed=3;
-          isRunning=true;
+          anim.SetBool("Push",true);
+          anim.SetBool("Pull",false);
+          
          }
-         if(verticalInput<0)
+         if(verticalInput<0&& !anim.GetCurrentAnimatorStateInfo(0).IsName("Pull"))
          {
           speed=1;
-          isRunning=true;
+           anim.SetBool("Push",false);
+          anim.SetBool("Pull",true);
          }
          if(verticalInput==0)
          {
-          isRunning=false;
+          anim.SetBool("Push",false);
+          anim.SetBool("Pull",false);
          }
         
         transform.Translate(Vector3.forward * verticalInput * speed * Time.deltaTime);
     }
+    
     public void MoveOther()
     {
         othercont = true;
