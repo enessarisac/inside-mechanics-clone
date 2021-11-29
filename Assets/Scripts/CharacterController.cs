@@ -7,6 +7,8 @@ public class CharacterController : MonoBehaviour
     public float speed;
     public float jumpSpeed;
     public float rotationSpeed;
+    ClimbPosition climbPosition;
+    public GameObject climbPos;
     public GameObject text;
     Animator anim;
     Rigidbody rb;
@@ -15,14 +17,13 @@ public class CharacterController : MonoBehaviour
     public bool isGround;
     public bool othercont=false;
     public bool isRunning;
-    private float decimalEnergy=5;
-    public int energy;
-    public bool canSprint,sprint;
+    public bool sprint;
     TakeObject takeObjects;
     public GameObject takingObj;
-    
+    GameObject player;
     private void Start()
     {
+        climbPosition=climbPos.GetComponent<ClimbPosition>();
         takeObjects=takingObj.GetComponent<TakeObject>();
         anim = gameObject.GetComponent<Animator>();
         moveObject = controll.GetComponent<MoveObject>();
@@ -30,10 +31,7 @@ public class CharacterController : MonoBehaviour
     }
     public void Update()
     {
-        
-        energy = Mathf.RoundToInt(decimalEnergy);
-
-        if (moveObject.isMine==true&&takeObjects.isHolding==false)
+        if (moveObject.isMine==true&&takeObjects.isHolding==false && hang==false)
         {
             Movement();
             
@@ -42,7 +40,7 @@ public class CharacterController : MonoBehaviour
         if(moveObject.isMine==false)
         {
             MoveOther();
-            
+            isRunning=false;
         }
         if (isRunning&&isGround)
         {
@@ -52,7 +50,7 @@ public class CharacterController : MonoBehaviour
         {
             anim.SetBool("isRunning", false);
         }
-        if (isRunning && canSprint)
+        if (isRunning)
         {
             
              if (Input.GetKey(KeyCode.LeftShift))
@@ -61,7 +59,7 @@ public class CharacterController : MonoBehaviour
                 if (sprint == true)
                          {
                              speed = 6;
-                             decimalEnergy -= 1 * Time.deltaTime;
+                             
                              anim.SetBool("Sprint",true);
                          }
                 
@@ -69,56 +67,24 @@ public class CharacterController : MonoBehaviour
                 if(Input.GetKeyUp(KeyCode.LeftShift))
                 {
                     sprint=false;
-                }
-                
+                }    
         }
-        else if (!isRunning || canSprint==false)
+        else if (!isRunning)
         {
             sprint = false;
-        }
-
-
-        if (energy == 5)
-        {
-            canSprint = true;
-        }
-        if (energy == 0)
-        {
-            canSprint = false;
-           
-        }
-        if (energy != 5 && sprint == false)
-        {
-            decimalEnergy += 1 * Time.deltaTime;
-            if (energy == 5)
-            {
-                canSprint = true;
-            }
-
-            
         }
         if (sprint == false)
         {
             anim.SetBool("Sprint",false);
             speed = 3;
         }
-        if (!canSprint)
-        {
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                text.SetActive(true);
-
-            }
-        }
-        if (canSprint)
-        {
-           text.SetActive(false);
-        }
         if(takeObjects.isHolding==true)
         {
             PushMovement();
  
         }
+        
+       
     }
     private void OnCollisionStay(Collision collision)
     {
@@ -135,14 +101,14 @@ public class CharacterController : MonoBehaviour
         
     public void Movement()
     {
-         anim.SetBool("Push",false);
-          anim.SetBool("Pull",false);
+        anim.SetBool("Push",false);
+        anim.SetBool("Pull",false);
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
         Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput);
         movementDirection.Normalize();
-        if (horizontalInput != 0 || verticalInput != 0)
+        if (horizontalInput != 0 || verticalInput != 0 && hang==false)
         {
             isRunning = true;
         }
@@ -151,7 +117,7 @@ public class CharacterController : MonoBehaviour
             isRunning = false;
         }
         transform.Translate(movementDirection * speed * Time.deltaTime, Space.World);
-        if (Input.GetKeyDown(KeyCode.Space)&&isGround)
+        if (Input.GetKeyDown(KeyCode.Space)&&isGround&&trig==false)
         {
 
             if(!anim.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
@@ -167,7 +133,7 @@ public class CharacterController : MonoBehaviour
             transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
         }
     }
-    
+    public bool hang;
     public void PushMovement()
     {
         
@@ -196,7 +162,48 @@ public class CharacterController : MonoBehaviour
         
         transform.Translate(Vector3.forward * verticalInput * speed * Time.deltaTime);
     }
-    
+    public bool trig;
+public bool climb;
+    private void OnTriggerStay(Collider other) 
+    {
+        if(other.gameObject.CompareTag("Ledge"))
+        {
+            
+            trig=true;
+            if(Input.GetKey(KeyCode.Space))
+            {
+                hang=true;
+              
+              anim.SetBool("ToLedge",true);
+
+            }
+            if(Input.GetKey(KeyCode.Q)&&hang)
+              {
+                  
+                  anim.SetTrigger("Drop");
+                  anim.SetBool("ToLedge",false);
+                  hang=false;
+              }
+             if(Input.GetMouseButton(0)&&hang)
+              {     
+                  anim.SetBool("ToLedge",false);             
+                  hang=false;
+                  anim.SetTrigger("Climb"); 
+                  climb=true;    
+                  if(Input.GetMouseButtonUp(0))
+                  {
+                      climb=false;
+
+                  }    
+              }  
+                           
+        }
+    }
+    private void OnTriggerExit(Collider other) {
+        trig=false;
+        hang=false;
+       climb=false;
+    }
     public void MoveOther()
     {
         othercont = true;

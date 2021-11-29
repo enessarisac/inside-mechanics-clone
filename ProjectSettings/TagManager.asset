@@ -9,6 +9,7 @@ TagManager:
   - Ground
   - Enemy
   - Pushable
+  - Ledge
   layers:
   - Default
   - TransparentFX
