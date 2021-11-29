@@ -16,6 +16,7 @@ public class CharacterController : MonoBehaviour
     public bool othercont=false;
     public bool isRunning;
     public bool sprint;
+    Vector3 trans=new Vector3();
     TakeObject takeObjects;
     public GameObject takingObj;
     BoxCollider coll;
@@ -87,7 +88,7 @@ public class CharacterController : MonoBehaviour
             PushMovement();
  
         }
-        if(anim.GetCurrentAnimatorStateInfo(0).IsName("Slide")&&slidable==true||hang&& slidable==true)
+        if(anim.GetCurrentAnimatorStateInfo(0).IsName("Slide")&&slidable==true||hang)
                              {
                                  
                                  coll.enabled=false;
@@ -183,15 +184,16 @@ public class CharacterController : MonoBehaviour
     public bool climb;
     private void OnTriggerStay(Collider other) 
     {
-         climbPos.transform.position=GameObject.Find("Ledge").transform.position;
-         
         if(other.gameObject.CompareTag("Slidable"))
               {
              slidable=true;
               }  
         if(other.gameObject.CompareTag("Ledge"))
-        {
-            
+        {         
+            Vector3 ledPos = GameObject.Find("Ledge").transform.position;            
+            Vector3 pos = new Vector3 (transform.position.x , ledPos.y , ledPos.z);
+            climbPos.transform.position = pos;
+
             trig=true;
             if(Input.GetKey(KeyCode.Space))
             {
