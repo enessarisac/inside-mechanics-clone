@@ -1,0 +1,2 @@
+![Platform](https://img.shields.io/badge/platform%20-desktop-brightgreen.svg)
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/enessarisac/inside-mechanics-clone)

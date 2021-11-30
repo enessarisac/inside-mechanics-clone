@@ -190,13 +190,15 @@ public class CharacterController : MonoBehaviour
               }  
         if(other.gameObject.CompareTag("Ledge"))
         {         
+            
             Vector3 ledPos = GameObject.Find("Ledge").transform.position;            
-            Vector3 pos = new Vector3 (transform.position.x , ledPos.y , ledPos.z);
+            Vector3 pos = new Vector3 (transform.position.x , ledPos.y , ledPos.z-2.2f);
             climbPos.transform.position = pos;
-
+            trans=climbPos.transform.position;
             trig=true;
             if(Input.GetKey(KeyCode.Space))
             {
+                transform.LookAt(trans);
                 hang=true;
               
               anim.SetBool("ToLedge",true);
@@ -211,6 +213,8 @@ public class CharacterController : MonoBehaviour
               }
              if(Input.GetMouseButton(0)&&hang)
               {     
+            
+            
                   anim.SetBool("ToLedge",false);             
                   hang=false;
                   anim.SetTrigger("Climb"); 
