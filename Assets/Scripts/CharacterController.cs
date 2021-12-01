@@ -11,6 +11,8 @@ public class CharacterController : MonoBehaviour
     Animator anim;
     Rigidbody rb;
     MoveObject moveObject;
+    AudioSource audioSource;
+    public AudioClip breath;
     public GameObject controll;
     public bool isGround;
     public bool othercont=false;
@@ -31,6 +33,10 @@ public class CharacterController : MonoBehaviour
     }
     public void Update()
     {
+        if(isWorking==true)
+        {
+             transform.position=Vector3.SmoothDamp(transform.position,climbPos.transform.position,ref velocity,smoothTime); 
+        }
         if (moveObject.isMine==true&&takeObjects.isHolding==false && hang==false)
         {
             Movement();
@@ -88,16 +94,16 @@ public class CharacterController : MonoBehaviour
             PushMovement();
  
         }
-        if(anim.GetCurrentAnimatorStateInfo(0).IsName("Slide")&&slidable==true||hang)
+        if(anim.GetCurrentAnimatorStateInfo(0).IsName("Slide")&&slidable==true||hang||isWorking)
                              {
                                  
                                  coll.enabled=false;
-                                 rb.useGravity=false;
+                                 rb.isKinematic=true;
                              }
                              else
                              {
                                  coll.enabled=true;
-                                 rb.useGravity=true;
+                                 rb.isKinematic=false;;
                              }
         
        
@@ -133,17 +139,7 @@ public class CharacterController : MonoBehaviour
             isRunning = false;
         }
         transform.Translate(movementDirection * speed * Time.deltaTime, Space.World);
-        if (Input.GetKeyDown(KeyCode.Space)&&isGround&&trig==false)
-        {
 
-            if(!anim.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
-            {
-                
-              anim.SetTrigger("Jump");
-            }
-            
-           
-        }
         if (movementDirection != Vector3.zero)
         {
             Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
@@ -151,6 +147,7 @@ public class CharacterController : MonoBehaviour
         }
     }
     public bool hang;
+    public float smoothTime=0.1f;
     public void PushMovement()
     {
         
@@ -179,6 +176,16 @@ public class CharacterController : MonoBehaviour
         
         transform.Translate(Vector3.forward * verticalInput * speed * Time.deltaTime);
     }
+    public void JumpToWall() {
+        isWorking=true;                
+    }
+    public void toTheIdle()
+    {
+        isWorking=false; 
+    }
+
+    public bool isWorking;
+    private Vector3 velocity=Vector3.zero;
     public bool trig;
     public bool slidable;
     public bool climb;
@@ -190,15 +197,15 @@ public class CharacterController : MonoBehaviour
               }  
         if(other.gameObject.CompareTag("Ledge"))
         {         
-            
-            Vector3 ledPos = GameObject.Find("Ledge").transform.position;            
-            Vector3 pos = new Vector3 (transform.position.x , ledPos.y , ledPos.z-2.2f);
-            climbPos.transform.position = pos;
-            trans=climbPos.transform.position;
             trig=true;
+            Vector3 ledPos = GameObject.Find("Ledge").transform.position;            
+            Vector3 pos = new Vector3 (transform.position.x , ledPos.y+0.7f , ledPos.z-2.2f);
+            trans = pos;
+            climbPos.transform.position=trans;
+            
             if(Input.GetKey(KeyCode.Space))
             {
-                transform.LookAt(trans);
+                
                 hang=true;
               
               anim.SetBool("ToLedge",true);
@@ -213,8 +220,8 @@ public class CharacterController : MonoBehaviour
               }
              if(Input.GetMouseButton(0)&&hang)
               {     
-            
-            
+                
+                
                   anim.SetBool("ToLedge",false);             
                   hang=false;
                   anim.SetTrigger("Climb"); 

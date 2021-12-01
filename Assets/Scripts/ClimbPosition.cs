@@ -17,13 +17,7 @@ public class ClimbPosition : MonoBehaviour
         anim=gameObject.GetComponentInParent<Animator>();
         climbPos=GetComponent<Transform>();
     }
-    private void FixedUpdate() {
-        if(anim.GetCurrentAnimatorStateInfo(0).IsName("Climb")&&characterController.climb==true)
-            {   
-                   player.transform.position=climbPos.transform.position;
-                  
-            }
-    }
+    
     
     
 }

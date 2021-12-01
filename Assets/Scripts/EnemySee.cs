@@ -6,9 +6,14 @@ using UnityEngine.SceneManagement;
 public class EnemySee : MonoBehaviour
 {
     public bool LeftRightZ;
+    public bool see;
     public float EyeScanZ, ViewDistance;
     void Update()
     {
+        if(see)
+        {
+            See();
+        }
         if (LeftRightZ)
         {
             if (EyeScanZ < 40)
@@ -42,9 +47,30 @@ public class EnemySee : MonoBehaviour
             if (hit.transform.gameObject.tag == "Player")
             {
                 Debug.Log(gameObject.name + " CAN see Player");
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                
+                see=true;
             }
 
         }
+    }
+    public float speed=10;
+    public Transform player;
+    public float minDist;
+     public void Busted()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    public void See()
+    {
+        transform.LookAt(player);
+        if(Vector3.Distance(transform.position,player.position) >= minDist)
+        {
+          transform.position += transform.forward*speed*Time.deltaTime;
+        if(Vector3.Distance(transform.position,player.position) <= minDist)
+              {
+                 Busted();
+              }     
+    }
+   
     }
 }

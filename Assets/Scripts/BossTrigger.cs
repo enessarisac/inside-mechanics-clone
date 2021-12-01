@@ -10,4 +10,5 @@ public class BossTrigger : MonoBehaviour
                goBoss=true;
         }
     }
+    
 }
