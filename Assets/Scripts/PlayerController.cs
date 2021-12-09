@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public float speed;
     public float rotationSpeed;
-    ClimbPosition climbPosition;
+  
     public GameObject climbPos;
     Animator anim;
     Rigidbody rb;
@@ -24,7 +24,6 @@ public class CharacterController : MonoBehaviour
     BoxCollider coll;
     private void Start()
     {
-        climbPosition=climbPos.GetComponent<ClimbPosition>();
         takeObjects=takingObj.GetComponent<TakeObject>();
         anim = gameObject.GetComponent<Animator>();
         moveObject = controll.GetComponent<MoveObject>();

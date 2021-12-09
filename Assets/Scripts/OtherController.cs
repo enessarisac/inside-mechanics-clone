@@ -5,11 +5,11 @@ using UnityEngine;
 public class OtherController : MonoBehaviour
 {
     public float speed, rotationSpeed;
-    CharacterController characterController;
+    PlayerController characterController;
     public GameObject player;
     private void Start()
     {
-        characterController = player.GetComponent<CharacterController>();
+        characterController = player.GetComponent<PlayerController>();
     }
     private void Update()
     {
