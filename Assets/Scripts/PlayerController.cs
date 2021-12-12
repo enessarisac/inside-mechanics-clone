@@ -1,18 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     public float speed;
     public float rotationSpeed;
-  
     public GameObject climbPos;
     Animator anim;
     Rigidbody rb;
     MoveObject moveObject;
-    AudioSource audioSource;
-    public AudioClip breath;
     public GameObject controll;
     public bool isGround;
     public bool othercont=false;
@@ -21,7 +18,10 @@ public class PlayerController : MonoBehaviour
     Vector3 trans=new Vector3();
     TakeObject takeObjects;
     public GameObject takingObj;
+    public float runTimer;
     BoxCollider coll;
+
+    public float gravity;
     private void Start()
     {
         takeObjects=takingObj.GetComponent<TakeObject>();
@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour
         moveObject = controll.GetComponent<MoveObject>();
         rb = gameObject.GetComponent<Rigidbody>();
         coll=gameObject.GetComponent<BoxCollider>();
+        gravity=0;
+        runTimer=0;
     }
     public void Update()
     {
@@ -50,14 +52,7 @@ public class PlayerController : MonoBehaviour
         if (isRunning&&isGround)
         {
             anim.SetBool("isRunning", true);
-        }
-        if(!isRunning)
-        {
-            anim.SetBool("isRunning", false);
-        }
-        if (isRunning)
-        {
-            
+            runTimer+=1*Time.deltaTime;
              if (Input.GetKey(KeyCode.LeftShift))
                 {
                sprint = true;
@@ -69,21 +64,21 @@ public class PlayerController : MonoBehaviour
                              if(Input.GetKeyDown(KeyCode.LeftControl))
                              {
                                  anim.SetTrigger("Slide");
-                             }
-                             
+                             }      
                          }
-                
                 }
                 if(Input.GetKeyUp(KeyCode.LeftShift))
                 {
                     sprint=false;
                 }    
         }
-        else if (!isRunning)
+        if(!isRunning)
         {
+            
+            anim.SetBool("isRunning", false);
             sprint = false;
         }
-        if (sprint == false)
+        if (!sprint)
         {
             anim.SetBool("Sprint",false);
             speed = 3;
@@ -104,9 +99,22 @@ public class PlayerController : MonoBehaviour
                                  coll.enabled=true;
                                  rb.isKinematic=false;;
                              }
-        
-       
+        if(!isGround)
+        {
+            gravity+=1*Time.deltaTime;
+        }else if(isGround&&gravity<1)
+        {
+            gravity=0;
+        }
+        if(gravity>=1)
+        {
+            if(isGround)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+        }
     }
+    
     private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
@@ -144,6 +152,7 @@ public class PlayerController : MonoBehaviour
             Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
         }
+        
     }
     public bool hang;
     public float smoothTime=0.1f;
@@ -217,7 +226,7 @@ public class PlayerController : MonoBehaviour
                   anim.SetBool("ToLedge",false);
                   hang=false;
               }
-             if(Input.GetMouseButton(0)&&hang)
+             if(Input.GetMouseButtonDown(0)&&hang)
               {     
                 
                 

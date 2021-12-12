@@ -8,13 +8,14 @@ public class EnemySee : MonoBehaviour
     public bool LeftRightZ;
     public bool see;
     public float EyeScanZ, ViewDistance;
+    public GameObject fLight;
     void Update()
     {
         if(see)
         {
             See();
         }
-        if (LeftRightZ)
+        if (LeftRightZ&&!see)
         {
             if (EyeScanZ < 40)
             {
@@ -27,7 +28,7 @@ public class EnemySee : MonoBehaviour
         }
         else
         {
-            if (EyeScanZ > -40)
+            if (EyeScanZ > -40&&!see)
             {
                 EyeScanZ -= 30 * Time.deltaTime;
             }
@@ -47,7 +48,7 @@ public class EnemySee : MonoBehaviour
             if (hit.transform.gameObject.tag == "Player")
             {
                 Debug.Log(gameObject.name + " CAN see Player");
-                
+                EyeScanZ=0;
                 see=true;
             }
 
