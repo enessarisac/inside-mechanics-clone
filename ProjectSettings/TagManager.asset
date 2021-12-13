@@ -11,6 +11,7 @@ TagManager:
   - Pushable
   - Ledge
   - Slidable
+  - LevelManager
   layers:
   - Default
   - TransparentFX
