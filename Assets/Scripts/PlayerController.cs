@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     Vector3 trans=new Vector3();
     TakeObject takeObjects;
     LevelController levelController;
-    public GameObject takingObj;
+    public GameObject takingObj,gameManager;
     public float runTimer;
     BoxCollider coll;
 
@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
         coll=gameObject.GetComponent<BoxCollider>();
         gravity=0;
         runTimer=0;
-        levelController = GameObject.FindWithTag("LevelManager").GetComponent<LevelController>();
+        levelController=gameManager.GetComponent<LevelController>();
     }
     public void Update()
     {

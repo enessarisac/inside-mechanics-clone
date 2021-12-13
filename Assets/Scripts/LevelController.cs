@@ -7,9 +7,7 @@ public class LevelController : MonoBehaviour
 {
     public GameObject playButton,optionsButton,controlsButton,backButton,controlText;
 
-    private void Awake() {
-        DontDestroyOnLoad(this.gameObject);
-    }
+    
    public void GameStart()
    {
        SceneManager.LoadScene("Level1");
@@ -45,5 +43,13 @@ public class LevelController : MonoBehaviour
    public void RestartLevel()
    {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+   }
+   public void Quit()
+   {
+       Application.Quit();
+   }
+   public void MainMenu()
+   {
+       SceneManager.LoadScene("MainMenu");
    }
 }

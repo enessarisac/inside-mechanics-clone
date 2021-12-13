@@ -11,16 +11,19 @@ public class Runner : MonoBehaviour
     public GameObject bossTrig;
     public float speed;
     LevelController levelController;
+    public GameObject gameManager;
   
     public void Start ()
     {
-        levelController = GameObject.FindWithTag("LevelManager").GetComponent<LevelController>();
+        
         bossTrigger=bossTrig.GetComponent<BossTrigger>();
+        levelController=gameManager.GetComponent<LevelController>();
         
     }
     public void Update()
     {
-       if(bossTrigger.goBoss==true){
+       if(bossTrigger.goBoss==true)
+       {
            Chase();
        }
        

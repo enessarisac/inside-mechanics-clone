@@ -12,6 +12,7 @@ TagManager:
   - Ledge
   - Slidable
   - LevelManager
+  - See
   layers:
   - Default
   - TransparentFX

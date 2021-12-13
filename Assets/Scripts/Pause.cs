@@ -5,29 +5,38 @@ using UnityEngine;
 public class Pause : MonoBehaviour
 {
     public bool isPaused=false;
+    public GameObject canvas;
     public void Update()
     {
-        StartStop();
+        if(!isPaused)
+        StopGame();
+        else
+        StartGame();
     }
-    public void StartStop()
+    public void StartGame()
     {
-    if(!isPaused)
+        if(Input.GetKeyDown(KeyCode.Escape))
         {
-            if(Input.GetKey(KeyCode.U))
-            {
-                Time.timeScale=0;
-                 isPaused=true;
-            }
-           
-        }
-        if(isPaused)
-        {
-            if (Input.GetKey(KeyCode.P))
-            {
-                Time.timeScale=1;
-                isPaused=false;
-            }
-            
+            Time.timeScale=1;
+            isPaused=false;
+            canvas.SetActive(false);
         }
     }
+    public void StopGame()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Time.timeScale=0;
+            isPaused=true;
+             canvas.SetActive(true);
+        }
+    }
+    public void StartGameWithButton()
+    {
+        Time.timeScale=1;
+        isPaused=false;
+         canvas.SetActive(false);
+    }
+    
+    
 }

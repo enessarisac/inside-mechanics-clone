@@ -10,8 +10,9 @@ public class EnemySee : MonoBehaviour
     public float EyeScanZ, ViewDistance;
     public GameObject fLight;
     LevelController levelController;
+    public GameObject gameManager;
      private void Start() {
-         levelController = GameObject.FindWithTag("LevelManager").GetComponent<LevelController>();
+         levelController = gameManager.GetComponent<LevelController>();
      }
     void Update()
     {
