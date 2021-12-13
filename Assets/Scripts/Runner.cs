@@ -10,9 +10,11 @@ public class Runner : MonoBehaviour
     BossTrigger bossTrigger;
     public GameObject bossTrig;
     public float speed;
+    LevelController levelController;
   
     public void Start ()
     {
+        levelController = GameObject.FindWithTag("LevelManager").GetComponent<LevelController>();
         bossTrigger=bossTrig.GetComponent<BossTrigger>();
         
     }
@@ -37,7 +39,7 @@ public class Runner : MonoBehaviour
     }
     public void Busted()
     {
-        Debug.Log("yakalandın");
+        levelController.RestartLevel();
     }
 }
 

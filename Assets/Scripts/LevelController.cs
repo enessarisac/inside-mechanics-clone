@@ -6,6 +6,10 @@ using UnityEngine.SceneManagement;
 public class LevelController : MonoBehaviour
 {
     public GameObject playButton,optionsButton,controlsButton,backButton,controlText;
+
+    private void Awake() {
+        DontDestroyOnLoad(this.gameObject);
+    }
    public void GameStart()
    {
        SceneManager.LoadScene("Level1");
@@ -32,5 +36,14 @@ public class LevelController : MonoBehaviour
        controlsButton.SetActive(false);
        controlText.SetActive(true);
 
+   }
+   public void NextLevel()
+   {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+1);
+
+   }
+   public void RestartLevel()
+   {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
    }
 }

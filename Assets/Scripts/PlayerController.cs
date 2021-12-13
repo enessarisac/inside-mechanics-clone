@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     public bool sprint;
     Vector3 trans=new Vector3();
     TakeObject takeObjects;
+    LevelController levelController;
     public GameObject takingObj;
     public float runTimer;
     BoxCollider coll;
@@ -31,6 +32,7 @@ public class PlayerController : MonoBehaviour
         coll=gameObject.GetComponent<BoxCollider>();
         gravity=0;
         runTimer=0;
+        levelController = GameObject.FindWithTag("LevelManager").GetComponent<LevelController>();
     }
     public void Update()
     {
@@ -110,7 +112,7 @@ public class PlayerController : MonoBehaviour
         {
             if(isGround)
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                levelController.RestartLevel();
             }
         }
     }
@@ -199,6 +201,10 @@ public class PlayerController : MonoBehaviour
     public bool climb;
     private void OnTriggerStay(Collider other) 
     {
+        if(other.gameObject.CompareTag("Finish"))
+        {
+                levelController.NextLevel();
+        }
         if(other.gameObject.CompareTag("Slidable"))
               {
              slidable=true;

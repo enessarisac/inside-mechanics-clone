@@ -9,6 +9,10 @@ public class EnemySee : MonoBehaviour
     public bool see;
     public float EyeScanZ, ViewDistance;
     public GameObject fLight;
+    LevelController levelController;
+     private void Start() {
+         levelController = GameObject.FindWithTag("LevelManager").GetComponent<LevelController>();
+     }
     void Update()
     {
         if(see)
@@ -59,7 +63,7 @@ public class EnemySee : MonoBehaviour
     public float minDist;
      public void Busted()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        levelController.RestartLevel();
     }
     public void See()
     {
