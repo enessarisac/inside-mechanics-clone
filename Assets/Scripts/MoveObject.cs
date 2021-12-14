@@ -12,7 +12,7 @@ public class MoveObject : MonoBehaviour
     }
     public void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.CompareTag("TakeObjects"))
+        if (other.gameObject.CompareTag("Player"))
         {
             if (Input.GetKey(KeyCode.E))
             {

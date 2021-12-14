@@ -6,6 +6,11 @@ public class Pause : MonoBehaviour
 {
     public bool isPaused=false;
     public GameObject canvas;
+    private void Start() 
+    {
+        Time.timeScale=1;
+        isPaused=false;
+    }
     public void Update()
     {
         if(!isPaused)
