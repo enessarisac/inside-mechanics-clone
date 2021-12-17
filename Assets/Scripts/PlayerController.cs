@@ -21,7 +21,6 @@ public class PlayerController : MonoBehaviour
     public GameObject takingObj,gameManager;
     public float runTimer;
     BoxCollider coll;
-
     public float gravity;
     private void Start()
     {
@@ -36,29 +35,35 @@ public class PlayerController : MonoBehaviour
     }
     public void Update()
     {
+        //tırmanmayı kontrol ediyor
         if(isWorking==true)
         {
-             transform.position=Vector3.SmoothDamp(transform.position,climbPos.transform.position,ref velocity,smoothTime); 
+             Climb();
         }
+        //hareket edicek inputlar karaktere ait ise çalışacak
         if (moveObject.isMine==true&&takeObjects.isHolding==false && hang==false)
         {
             Movement();
             
             othercont = false;
         }
+        //hareket inputlar karakterin değilse çalışacak
         if(moveObject.isMine==false)
         {
             MoveOther();
             isRunning=false;
         }
+        //karakterin yerde ve koştuğunu kontrol ediyoruz 
         if (isRunning&&isGround)
         {
+            //animasyon ve hız ayarlanıyor
             anim.SetBool("isRunning", true);
             runTimer+=1*Time.deltaTime;
              if (Input.GetKey(KeyCode.LeftShift))
                 {
                sprint = true;
                 if (sprint == true)
+                energy();
                          {
                              speed = 6;
                              
@@ -90,17 +95,19 @@ public class PlayerController : MonoBehaviour
             PushMovement();
  
         }
+        //hangi durumda collider ve rigidbody kaldırılacak onu kontrol ediyoruz
         if(anim.GetCurrentAnimatorStateInfo(0).IsName("Slide")&&slidable==true||hang||isWorking)
-                             {
+        {
                                  
-                                 coll.enabled=false;
-                                 rb.isKinematic=true;
-                             }
-                             else
-                             {
-                                 coll.enabled=true;
-                                 rb.isKinematic=false;;
-                             }
+            coll.enabled=false;
+            rb.isKinematic=true;
+        }
+        else
+        {
+            coll.enabled=true;
+            rb.isKinematic=false;;
+        }
+         //düşüşü kontrol ediyoruz                    
         if(!isGround)
         {
             gravity+=1*Time.deltaTime;
@@ -112,9 +119,35 @@ public class PlayerController : MonoBehaviour
         {
             if(isGround)
             {
-                levelController.RestartLevel();
+               fall();
             }
         }
+        if(timer>10)
+        {
+            //fall animation plays
+        }
+    }
+    public float timer;
+    //enerjiyi ayarlıyoruz
+    public void energy()
+    {
+            if(speed==6)
+            {
+                timer+=1*Time.deltaTime;          
+            }
+            else if (speed!=6 && timer>0)
+            {
+                timer-=2*Time.deltaTime;
+            }
+    }
+    //tırmanma halinde transormu ayarlıyoruz
+    public void Climb()
+    {
+        transform.position=Vector3.SmoothDamp(transform.position,climbPos.transform.position,ref velocity,smoothTime);
+    }
+    public void fall()
+    {
+         levelController.RestartLevel();
     }
     
     private void OnCollisionStay(Collision collision)
@@ -127,18 +160,22 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionExit(Collision collision)
     {
-        isGround = false;
+         if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGround = false;
+        }
     }
-        
+        //hareket bölümü
     public void Movement()
     {
         anim.SetBool("Push",false);
         anim.SetBool("Pull",false);
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
-
+        //yatay ve dikey girdileri değişkene atıyoruz
         Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput);
         movementDirection.Normalize();
+        //kullanıcının hareket ettiğini öğreniyoruz
         if (horizontalInput != 0 || verticalInput != 0 && hang==false)
         {
             isRunning = true;
@@ -147,8 +184,9 @@ public class PlayerController : MonoBehaviour
         {
             isRunning = false;
         }
+        //girilen girdiye göre karakteri hareket ettiriyoruz
         transform.Translate(movementDirection * speed * Time.deltaTime, Space.World);
-
+        //girilen girdi 0a eşit değilse hareket girdisine göre karakterin bakacağı yönü seçiyoruz
         if (movementDirection != Vector3.zero)
         {
             Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
@@ -158,6 +196,7 @@ public class PlayerController : MonoBehaviour
     }
     public bool hang;
     public float smoothTime=0.1f;
+    //karakterimiz bir şeyi itiyor ya da çekiyorsa bu bölüm çalışıyor
     public void PushMovement()
     {
         
@@ -201,21 +240,26 @@ public class PlayerController : MonoBehaviour
     public bool climb;
     private void OnTriggerStay(Collider other) 
     {
+        //sonraki levele geçiş kısmı
         if(other.gameObject.CompareTag("Finish"))
         {
                 levelController.NextLevel();
         }
+        //normalin aksine kayılabilir alanlarda kaydığımızda gerçekleşen bölüm
         if(other.gameObject.CompareTag("Slidable"))
               {
              slidable=true;
               }  
+              //tırmnılabilecek böllgelerde çalışacak
         if(other.gameObject.CompareTag("Ledge"))
         {         
             trig=true;
+            //gerekli pozisyonları alıyoruz
             Vector3 ledPos = GameObject.Find("Ledge").transform.position;            
             Vector3 pos = new Vector3 (transform.position.x , ledPos.y+0.7f , ledPos.z-2.2f);
             trans = pos;
             climbPos.transform.position=trans;
+            //tırmanılacak pozisyonu hesaplanan pozisyona eşitliyoruz
             
             if(Input.GetKey(KeyCode.Space))
             {
@@ -256,6 +300,7 @@ public class PlayerController : MonoBehaviour
        climb=false;
        slidable=false;
     }
+    //eğer kontrol bizde değilse çalışacak bölüm
     public void MoveOther()
     {
         othercont = true;
