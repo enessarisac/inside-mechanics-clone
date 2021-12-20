@@ -9,127 +9,49 @@ public class PlayerController : MonoBehaviour
     public GameObject climbPos;
     Animator anim;
     Rigidbody rb;
-    MoveObject moveObject;
-    public GameObject controll;
     public bool isGround;
     public bool othercont = false;
-    public bool isRunning;
     public bool sprint;
     Vector3 trans = new Vector3();
-    TakeObject takeObjects;
     LevelController levelController;
-    public GameObject takingObj, gameManager;
-    public float runTimer;
+    public GameObject gameManager;
     BoxCollider coll;
     public float gravity;
+    float horizontalInput,verticalInput;
     public bool isCrouching = false;
+    public bool isMoving;
     private void Start()
     {
-        takeObjects = takingObj.GetComponent<TakeObject>();
         anim = gameObject.GetComponent<Animator>();
-        moveObject = controll.GetComponent<MoveObject>();
         rb = gameObject.GetComponent<Rigidbody>();
         coll = gameObject.GetComponent<BoxCollider>();
         gravity = 0;
-        runTimer = 0;
         levelController = gameManager.GetComponent<LevelController>();
     }
     public void Update()
     {
-        //tırmanmayı kontrol ediyor
-        if (isWorking == true)
-        {
-            Climb();
-        }
-        //hareket edicek inputlar karaktere ait ise çalışacak
-        if (moveObject.isMine == true && takeObjects.isHolding == false && hang == false)
+        anim.SetBool("Sprint", sprint);
+        anim.SetBool("isRunning",isMoving);
+        horizontalInput = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxis("Vertical"); 
+        if (hang == false && isGround)
         {
             Movement();
-
+            
             othercont = false;
         }
-        //hareket inputlar karakterin değilse çalışacak
-        if (moveObject.isMine == false)
-        {
-            MoveOther();
-            isRunning = false;
-        }
-        //karakterin yerde ve koştuğunu kontrol ediyoruz 
-        if (isRunning && isGround)
-        {
-            //animasyon ve hız ayarlanıyor
-            anim.SetBool("isRunning", true);
-            runTimer += 1 * Time.deltaTime;
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (horizontalInput == 0 && verticalInput == 0 || hang == true)
             {
-                sprint = true;
-                if (sprint == true)
-                    energy();
-                {
-                    speed = 6;
-
-                    anim.SetBool("Sprint", true);
-
-                    if (Input.GetKeyDown(KeyCode.LeftControl))
-                    {
-                        anim.SetTrigger("Slide");
-                    }
-                }
-
-            }
-            if (Input.GetKeyUp(KeyCode.LeftShift))
-            {
-                sprint = false;
-            }
-            //Hareket ederken ve koşmazken çömelme
-            if (!sprint)
-            {
+                isMoving=false; 
+                speed=3;
                 if (Input.GetKey(KeyCode.LeftControl))
-                {
-                    isCrouching = true;
-                    movingCrouch();
-                }
-                if (Input.GetKeyUp(KeyCode.LeftControl))
-                {
-                    isCrouching = false;
-                    speed = 3;
-                    //anim.SetTrigger("Walking"); yeniden yürümeye döndürme
-                }
-            }
-
-        }
-
-        if (!isRunning)
-        {
-
-            anim.SetBool("isRunning", false);
-            sprint = false;
-            //Hareket etmezken crouch animasyonu
-            if (Input.GetKey(KeyCode.LeftControl))
             {
                 stillCrouch();
-            }
-            if (Input.GetKeyUp(KeyCode.LeftControl))
-            {
-                //anim.SetTrigger("Dwarf Idle");
-            }
-        }
-        //Koşmaz ve çömelmezken hızı normale çekiyor
-        if (!sprint && !isCrouching)
-        {
-            anim.SetBool("Sprint", false);
-            speed = 3;
-        }
-
-        if (takeObjects.isHolding == true)
-        {
-            PushMovement();
-
-        }
+            } 
+            }   
         //hangi durumda collider ve rigidbody kaldırılacak onu kontrol ediyoruz
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Slide") && slidable == true || hang || isWorking)
         {
-
             coll.enabled = false;
             rb.isKinematic = true;
         }
@@ -139,30 +61,18 @@ public class PlayerController : MonoBehaviour
             rb.isKinematic = false; ;
         }
         //düşüşü kontrol ediyoruz                    
-        if (!isGround)
+        if (isGround)
+        {
+            if(gravity<1)
+            gravity = 0;  
+            else
+            fall();
+        }
+        else
         {
             gravity += 1 * Time.deltaTime;
         }
-        else if (isGround && gravity < 1)
-        {
-            gravity = 0;
-        }
-        if (gravity >= 1)
-        {
-            if (isGround)
-            {
-                fall();
-            }
-        }
-        if (timer > 10)
-        {
-            //fall animation plays
-        }
-        // Crouchta mı değil mi diye kontrol ediyor
-        if (isCrouching == true)
-        {
-
-        }
+        // Crouchta mı değil mi diye kontrol ediyor   
     }
     public float timer;
     //enerjiyi ayarlıyoruz
@@ -175,6 +85,10 @@ public class PlayerController : MonoBehaviour
         else if (speed != 6 && timer > 0)
         {
             timer -= 2 * Time.deltaTime;
+        }
+        if (timer > 10)
+        {
+            //fall
         }
     }
     //tırmanma halinde transformu ayarlıyoruz
@@ -207,19 +121,51 @@ public class PlayerController : MonoBehaviour
     {
         anim.SetBool("Push", false);
         anim.SetBool("Pull", false);
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
+        
         //yatay ve dikey girdileri değişkene atıyoruz
         Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput);
         movementDirection.Normalize();
         //kullanıcının hareket ettiğini öğreniyoruz
         if (horizontalInput != 0 || verticalInput != 0 && hang == false)
-        {
-            isRunning = true;
-        }
-        else
-        {
-            isRunning = false;
+        {   
+            isMoving=true;
+            anim.SetBool("isRunning", true);
+            if(isMoving)
+            {
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+               sprint = true;
+                if (sprint == true)
+                energy();
+                         {
+                             speed = 6;
+
+                             anim.SetBool("Sprint",true);
+                             if(Input.GetKeyDown(KeyCode.LeftControl))
+                             {
+                                 anim.SetTrigger("Slide");
+                             }      
+                         }
+                }
+                else
+                {
+                 sprint=false;
+                }
+            }          
+            if (!sprint)
+            {
+                if (Input.GetKey(KeyCode.LeftControl))
+                {
+                    isCrouching = true;
+                    movingCrouch();
+                }
+                if (Input.GetKeyUp(KeyCode.LeftControl))
+                {
+                    isCrouching = false;
+                    speed = 3;
+                    //anim.SetTrigger("Walking"); yeniden yürümeye döndürme
+                }
+            }             
         }
         //girilen girdiye göre karakteri hareket ettiriyoruz
         transform.Translate(movementDirection * speed * Time.deltaTime, Space.World);
@@ -237,7 +183,7 @@ public class PlayerController : MonoBehaviour
     public void PushMovement()
     {
 
-        isRunning = false;
+        
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
@@ -264,13 +210,13 @@ public class PlayerController : MonoBehaviour
     }
     public void JumpToWall()
     {
+        Climb();
         isWorking = true;
     }
     public void toTheIdle()
     {
         isWorking = false;
     }
-
     public bool isWorking;
     private Vector3 velocity = Vector3.zero;
     public bool trig;
@@ -356,6 +302,7 @@ public class PlayerController : MonoBehaviour
     public void stillCrouch()
     {
         //anim.SetTrigger("still Crouch"); //Still Crouch animasyonu
+        Debug.Log("Crouch");
     }
 }
 

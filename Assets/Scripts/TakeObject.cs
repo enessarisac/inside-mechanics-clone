@@ -6,6 +6,9 @@ public class TakeObject : MonoBehaviour
 {
     public GameObject hands;
     public bool isHolding;
+    PlayerController playerController;
+
+    public GameObject player;
     Rigidbody rb;
     BoxCollider coll;
     public bool isTrigger = false;
@@ -14,6 +17,7 @@ public class TakeObject : MonoBehaviour
     {
         rb = gameObject.GetComponent<Rigidbody>();
         coll = gameObject.GetComponent<BoxCollider>();
+        playerController=player.GetComponent<PlayerController>();
     }
     private void OnTriggerStay(Collider other)
     {
@@ -23,6 +27,7 @@ public class TakeObject : MonoBehaviour
             if (Input.GetKey(KeyCode.E))
             {
                 isHolding = true;
+                playerController.PushMovement();
                 
             }
         }
@@ -51,6 +56,7 @@ public class TakeObject : MonoBehaviour
           if (Input.GetKey(KeyCode.Q)&&isHolding)
             {
                 isHolding = false;
+                playerController.Movement();
             }
     }
 }

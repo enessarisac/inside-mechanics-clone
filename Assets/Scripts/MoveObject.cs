@@ -6,9 +6,12 @@ public class MoveObject : MonoBehaviour
 {
     public bool isMine;
     
+    PlayerController playerController;
+    public GameObject player;
     private void Start()
     {
-        isMine = true;
+       
+        playerController=player.GetComponent<PlayerController>();
     }
     public void OnTriggerStay(Collider other)
     {
@@ -16,7 +19,9 @@ public class MoveObject : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.E))
             {
-                isMine = false;
+               
+                playerController.MoveOther();
+                isMine=false;
             }
         }
     }
@@ -24,7 +29,9 @@ public class MoveObject : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Q) && !isMine)
         {
-            isMine = true;
+            
+            playerController.Movement();
+            isMine=true;
         }
     }
 }

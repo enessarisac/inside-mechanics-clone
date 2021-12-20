@@ -1693,15 +1693,13 @@ MonoBehaviour:
   speed: 3
   rotationSpeed: 720
   climbPos: {fileID: 281424421}
-  controll: {fileID: 1518628581}
   isGround: 0
   othercont: 0
-  isRunning: 0
   sprint: 0
-  takingObj: {fileID: 626417696}
   gameManager: {fileID: 1192531141}
-  runTimer: 0
   gravity: 0
+  isCrouching: 0
+  timer: 0
   hang: 0
   smoothTime: 0.2
   isWorking: 0
@@ -4037,6 +4035,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hands: {fileID: 1738837949}
   isHolding: 0
+  player: {fileID: 211186182}
   isTrigger: 0
 --- !u!54 &626417698
 Rigidbody:
@@ -5022,7 +5021,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.06387604, y: -0.00000001823582, z: 0.0000000011672157, w: 0.9979579}
+  m_LocalRotation: {x: 0.063876055, y: 0.000000016651134, z: -0.0000000010657853, w: 0.9979578}
   m_LocalPosition: {x: -14.6, y: 2.39, z: -29.090008}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -7049,6 +7048,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isMine: 1
+  player: {fileID: 211186182}
 --- !u!1 &1525674806
 GameObject:
   m_ObjectHideFlags: 0
@@ -7205,7 +7205,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1544562461}
-  m_LocalRotation: {x: 0.06387604, y: -0.00000001823582, z: 0.0000000011672157, w: 0.9979579}
+  m_LocalRotation: {x: 0.063876055, y: 0.000000016651134, z: -0.0000000010657853, w: 0.9979578}
   m_LocalPosition: {x: -14.6, y: 2.39, z: -29.090008}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
