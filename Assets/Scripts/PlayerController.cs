@@ -12,144 +12,181 @@ public class PlayerController : MonoBehaviour
     MoveObject moveObject;
     public GameObject controll;
     public bool isGround;
-    public bool othercont=false;
+    public bool othercont = false;
     public bool isRunning;
     public bool sprint;
-    Vector3 trans=new Vector3();
+    Vector3 trans = new Vector3();
     TakeObject takeObjects;
     LevelController levelController;
-    public GameObject takingObj,gameManager;
+    public GameObject takingObj, gameManager;
     public float runTimer;
     BoxCollider coll;
     public float gravity;
+    public bool isCrouching = false;
     private void Start()
     {
-        takeObjects=takingObj.GetComponent<TakeObject>();
+        takeObjects = takingObj.GetComponent<TakeObject>();
         anim = gameObject.GetComponent<Animator>();
         moveObject = controll.GetComponent<MoveObject>();
         rb = gameObject.GetComponent<Rigidbody>();
-        coll=gameObject.GetComponent<BoxCollider>();
-        gravity=0;
-        runTimer=0;
-        levelController=gameManager.GetComponent<LevelController>();
+        coll = gameObject.GetComponent<BoxCollider>();
+        gravity = 0;
+        runTimer = 0;
+        levelController = gameManager.GetComponent<LevelController>();
     }
     public void Update()
     {
         //tırmanmayı kontrol ediyor
-        if(isWorking==true)
+        if (isWorking == true)
         {
-             Climb();
+            Climb();
         }
         //hareket edicek inputlar karaktere ait ise çalışacak
-        if (moveObject.isMine==true&&takeObjects.isHolding==false && hang==false)
+        if (moveObject.isMine == true && takeObjects.isHolding == false && hang == false)
         {
             Movement();
-            
+
             othercont = false;
         }
         //hareket inputlar karakterin değilse çalışacak
-        if(moveObject.isMine==false)
+        if (moveObject.isMine == false)
         {
             MoveOther();
-            isRunning=false;
+            isRunning = false;
         }
         //karakterin yerde ve koştuğunu kontrol ediyoruz 
-        if (isRunning&&isGround)
+        if (isRunning && isGround)
         {
             //animasyon ve hız ayarlanıyor
             anim.SetBool("isRunning", true);
-            runTimer+=1*Time.deltaTime;
-             if (Input.GetKey(KeyCode.LeftShift))
-                {
-               sprint = true;
+            runTimer += 1 * Time.deltaTime;
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                sprint = true;
                 if (sprint == true)
-                energy();
-                         {
-                             speed = 6;
-                             
-                             anim.SetBool("Sprint",true);
-                             if(Input.GetKeyDown(KeyCode.LeftControl))
-                             {
-                                 anim.SetTrigger("Slide");
-                             }      
-                         }
-                }
-                if(Input.GetKeyUp(KeyCode.LeftShift))
+                    energy();
                 {
-                    sprint=false;
-                }    
+                    speed = 6;
+
+                    anim.SetBool("Sprint", true);
+
+                    if (Input.GetKeyDown(KeyCode.LeftControl))
+                    {
+                        anim.SetTrigger("Slide");
+                    }
+                }
+
+            }
+            if (Input.GetKeyUp(KeyCode.LeftShift))
+            {
+                sprint = false;
+            }
+            //Hareket ederken ve koşmazken çömelme
+            if (!sprint)
+            {
+                if (Input.GetKey(KeyCode.LeftControl))
+                {
+                    isCrouching = true;
+                    movingCrouch();
+                }
+                if (Input.GetKeyUp(KeyCode.LeftControl))
+                {
+                    isCrouching = false;
+                    speed = 3;
+                    //anim.SetTrigger("Walking"); yeniden yürümeye döndürme
+                }
+            }
+
         }
-        if(!isRunning)
+
+        if (!isRunning)
         {
-            
+
             anim.SetBool("isRunning", false);
             sprint = false;
+            //Hareket etmezken crouch animasyonu
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                stillCrouch();
+            }
+            if (Input.GetKeyUp(KeyCode.LeftControl))
+            {
+                //anim.SetTrigger("Dwarf Idle");
+            }
         }
-        if (!sprint)
+        //Koşmaz ve çömelmezken hızı normale çekiyor
+        if (!sprint && !isCrouching)
         {
-            anim.SetBool("Sprint",false);
+            anim.SetBool("Sprint", false);
             speed = 3;
         }
-        if(takeObjects.isHolding==true)
+
+        if (takeObjects.isHolding == true)
         {
             PushMovement();
- 
+
         }
         //hangi durumda collider ve rigidbody kaldırılacak onu kontrol ediyoruz
-        if(anim.GetCurrentAnimatorStateInfo(0).IsName("Slide")&&slidable==true||hang||isWorking)
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Slide") && slidable == true || hang || isWorking)
         {
-                                 
-            coll.enabled=false;
-            rb.isKinematic=true;
+
+            coll.enabled = false;
+            rb.isKinematic = true;
         }
         else
         {
-            coll.enabled=true;
-            rb.isKinematic=false;;
+            coll.enabled = true;
+            rb.isKinematic = false; ;
         }
-         //düşüşü kontrol ediyoruz                    
-        if(!isGround)
+        //düşüşü kontrol ediyoruz                    
+        if (!isGround)
         {
-            gravity+=1*Time.deltaTime;
-        }else if(isGround&&gravity<1)
-        {
-            gravity=0;
+            gravity += 1 * Time.deltaTime;
         }
-        if(gravity>=1)
+        else if (isGround && gravity < 1)
         {
-            if(isGround)
+            gravity = 0;
+        }
+        if (gravity >= 1)
+        {
+            if (isGround)
             {
-               fall();
+                fall();
             }
         }
-        if(timer>10)
+        if (timer > 10)
         {
             //fall animation plays
+        }
+        // Crouchta mı değil mi diye kontrol ediyor
+        if (isCrouching == true)
+        {
+
         }
     }
     public float timer;
     //enerjiyi ayarlıyoruz
     public void energy()
     {
-            if(speed==6)
-            {
-                timer+=1*Time.deltaTime;          
-            }
-            else if (speed!=6 && timer>0)
-            {
-                timer-=2*Time.deltaTime;
-            }
+        if (speed == 6)
+        {
+            timer += 1 * Time.deltaTime;
+        }
+        else if (speed != 6 && timer > 0)
+        {
+            timer -= 2 * Time.deltaTime;
+        }
     }
-    //tırmanma halinde transormu ayarlıyoruz
+    //tırmanma halinde transformu ayarlıyoruz
     public void Climb()
     {
-        transform.position=Vector3.SmoothDamp(transform.position,climbPos.transform.position,ref velocity,smoothTime);
+        transform.position = Vector3.SmoothDamp(transform.position, climbPos.transform.position, ref velocity, smoothTime);
     }
     public void fall()
     {
-         levelController.RestartLevel();
+        levelController.RestartLevel();
     }
-    
+
     private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
@@ -160,23 +197,23 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionExit(Collision collision)
     {
-         if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground"))
         {
             isGround = false;
         }
     }
-        //hareket bölümü
+    //hareket bölümü
     public void Movement()
     {
-        anim.SetBool("Push",false);
-        anim.SetBool("Pull",false);
+        anim.SetBool("Push", false);
+        anim.SetBool("Pull", false);
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
         //yatay ve dikey girdileri değişkene atıyoruz
         Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput);
         movementDirection.Normalize();
         //kullanıcının hareket ettiğini öğreniyoruz
-        if (horizontalInput != 0 || verticalInput != 0 && hang==false)
+        if (horizontalInput != 0 || verticalInput != 0 && hang == false)
         {
             isRunning = true;
         }
@@ -192,123 +229,138 @@ public class PlayerController : MonoBehaviour
             Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
         }
-        
+
     }
     public bool hang;
-    public float smoothTime=0.1f;
+    public float smoothTime = 0.1f;
     //karakterimiz bir şeyi itiyor ya da çekiyorsa bu bölüm çalışıyor
     public void PushMovement()
     {
-        
-        isRunning=false;
+
+        isRunning = false;
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
-        
-         if(verticalInput>0&&!anim.GetCurrentAnimatorStateInfo(0).IsName("Push"))
-         {
-          speed=3;
-          anim.SetBool("Push",true);
-          anim.SetBool("Pull",false);
-          
-         }
-         if(verticalInput<0&& !anim.GetCurrentAnimatorStateInfo(0).IsName("Pull"))
-         {
-          speed=1;
-           anim.SetBool("Push",false);
-          anim.SetBool("Pull",true);
-         }
-         if(verticalInput==0)
-         {
-          anim.SetBool("Push",false);
-          anim.SetBool("Pull",false);
-         }
-        
+
+        if (verticalInput > 0 && !anim.GetCurrentAnimatorStateInfo(0).IsName("Push"))
+        {
+            speed = 3;
+            anim.SetBool("Push", true);
+            anim.SetBool("Pull", false);
+
+        }
+        if (verticalInput < 0 && !anim.GetCurrentAnimatorStateInfo(0).IsName("Pull"))
+        {
+            speed = 1;
+            anim.SetBool("Push", false);
+            anim.SetBool("Pull", true);
+        }
+        if (verticalInput == 0)
+        {
+            anim.SetBool("Push", false);
+            anim.SetBool("Pull", false);
+        }
+
         transform.Translate(Vector3.forward * verticalInput * speed * Time.deltaTime);
     }
-    public void JumpToWall() {
-        isWorking=true;                
+    public void JumpToWall()
+    {
+        isWorking = true;
     }
     public void toTheIdle()
     {
-        isWorking=false; 
+        isWorking = false;
     }
 
     public bool isWorking;
-    private Vector3 velocity=Vector3.zero;
+    private Vector3 velocity = Vector3.zero;
     public bool trig;
     public bool slidable;
     public bool climb;
-    private void OnTriggerStay(Collider other) 
+    private void OnTriggerStay(Collider other)
     {
         //sonraki levele geçiş kısmı
-        if(other.gameObject.CompareTag("Finish"))
+        if (other.gameObject.CompareTag("Finish"))
         {
-                levelController.NextLevel();
+            levelController.NextLevel();
         }
         //normalin aksine kayılabilir alanlarda kaydığımızda gerçekleşen bölüm
-        if(other.gameObject.CompareTag("Slidable"))
-              {
-             slidable=true;
-              }  
-              //tırmnılabilecek böllgelerde çalışacak
-        if(other.gameObject.CompareTag("Ledge"))
-        {         
-            trig=true;
+        if (other.gameObject.CompareTag("Slidable"))
+        {
+            slidable = true;
+        }
+        //tırmnılabilecek böllgelerde çalışacak
+        if (other.gameObject.CompareTag("Ledge"))
+        {
+            trig = true;
             //gerekli pozisyonları alıyoruz
-            Vector3 ledPos = GameObject.Find("Ledge").transform.position;            
-            Vector3 pos = new Vector3 (transform.position.x , ledPos.y+0.7f , ledPos.z-2.2f);
+            Vector3 ledPos = GameObject.Find("Ledge").transform.position;
+            Vector3 pos = new Vector3(transform.position.x, ledPos.y + 0.7f, ledPos.z - 2.2f);
             trans = pos;
-            climbPos.transform.position=trans;
+            climbPos.transform.position = trans;
             //tırmanılacak pozisyonu hesaplanan pozisyona eşitliyoruz
-            
-            if(Input.GetKey(KeyCode.Space))
+
+            if (Input.GetKey(KeyCode.Space))
             {
-                
-                hang=true;
-              
-              anim.SetBool("ToLedge",true);
+
+                hang = true;
+
+                anim.SetBool("ToLedge", true);
 
             }
-            if(Input.GetKey(KeyCode.Q)&&hang)
-              {
-                  
-                  anim.SetTrigger("Drop");
-                  anim.SetBool("ToLedge",false);
-                  hang=false;
-              }
-             if(Input.GetMouseButtonDown(0)&&hang)
-              {     
-                
-                
-                  anim.SetBool("ToLedge",false);             
-                  hang=false;
-                  anim.SetTrigger("Climb"); 
-                  climb=true;    
-                  if(Input.GetMouseButtonUp(0))
-                  {
-                      climb=false;
+            if (Input.GetKey(KeyCode.Q) && hang)
+            {
 
-                  }    
-              }
-              
-                           
+                anim.SetTrigger("Drop");
+                anim.SetBool("ToLedge", false);
+                hang = false;
+            }
+            if (Input.GetMouseButtonDown(0) && hang)
+            {
+
+
+                anim.SetBool("ToLedge", false);
+                hang = false;
+                anim.SetTrigger("Climb");
+                climb = true;
+                if (Input.GetMouseButtonUp(0))
+                {
+                    climb = false;
+
+                }
+            }
+
+
         }
     }
-    private void OnTriggerExit(Collider other) {
-        trig=false;
-        hang=false;
-       climb=false;
-       slidable=false;
+    private void OnTriggerExit(Collider other)
+    {
+        trig = false;
+        hang = false;
+        climb = false;
+        slidable = false;
     }
     //eğer kontrol bizde değilse çalışacak bölüm
     public void MoveOther()
     {
         othercont = true;
     }
-   }
-         
-           
-                    
+    //Hareket ederken Crouch yapmak
+    public void movingCrouch()
+    {
+        speed = 1.5f;
 
-            
-        
+        //anim.SetTrigger("walking Crouch"); //Crouch animasyonu 
+
+    }
+    //Yerinde dururken crouch yapmak
+    public void stillCrouch()
+    {
+        //anim.SetTrigger("still Crouch"); //Still Crouch animasyonu
+    }
+}
+
+
+
+
+
+
