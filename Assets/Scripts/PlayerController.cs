@@ -20,7 +20,6 @@ public class PlayerController : MonoBehaviour
     public float horizontalInput,verticalInput;
     public bool isCrouching = false;
     public bool isMoving;
-    public bool canPick;
     private void Start()
     {
         anim = gameObject.GetComponent<Animator>();
@@ -278,11 +277,6 @@ public class PlayerController : MonoBehaviour
 
 
         }
-        //Eğer objenin sphere colliderına girerse obje alınabilecek
-        if (other.gameObject.CompareTag("Pickable"))
-        {
-            canPick = true;
-        }
     }
     private void OnTriggerExit(Collider other)
     {
@@ -290,7 +284,6 @@ public class PlayerController : MonoBehaviour
         hang = false;
         climb = false;
         slidable = false;
-        canPick = false;
     }
     //eğer kontrol bizde değilse çalışacak bölüm
     public void MoveOther()
