@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     public GameObject gameManager;
     BoxCollider coll;
     public float gravity;
-    float horizontalInput,verticalInput;
+    public float horizontalInput,verticalInput;
     public bool isCrouching = false;
     public bool isMoving;
     private void Start()
