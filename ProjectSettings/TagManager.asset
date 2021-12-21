@@ -13,6 +13,7 @@ TagManager:
   - Slidable
   - LevelManager
   - See
+  - Pickable
   layers:
   - Default
   - TransparentFX
