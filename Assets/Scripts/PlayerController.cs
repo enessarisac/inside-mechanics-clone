@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     public float horizontalInput,verticalInput;
     public bool isCrouching = false;
     public bool isMoving;
+    public bool isHolding;
     private void Start()
     {
         anim = gameObject.GetComponent<Animator>();
@@ -32,8 +33,7 @@ public class PlayerController : MonoBehaviour
     {
         anim.SetBool("Sprint", sprint);
         anim.SetBool("isRunning",isMoving);
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical"); 
+        getInputs();
         if (hang == false && isGround)
         {
             Movement();
@@ -235,7 +235,7 @@ public class PlayerController : MonoBehaviour
             slidable = true;
         }
         //tırmnılabilecek böllgelerde çalışacak
-        if (other.gameObject.CompareTag("Ledge"))
+        if (other.gameObject.CompareTag("Ledge") && isHolding == false)
         {
             trig = true;
             //gerekli pozisyonları alıyoruz
@@ -303,6 +303,12 @@ public class PlayerController : MonoBehaviour
     {
         //anim.SetTrigger("still Crouch"); //Still Crouch animasyonu
         Debug.Log("Crouch");
+    }
+    //gets movement inputs from user
+    public void getInputs()
+    {
+        horizontalInput = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxis("Vertical");
     }
 }
 

@@ -7,12 +7,27 @@ public class EnemySee : MonoBehaviour
 {
     public bool LeftRightZ;
     public bool see;
+    public bool isThrown;
     public float EyeScanZ, ViewDistance;
-    public GameObject fLight;
+    public float minDistance;
+    float distance;
+    Vector3 objLocation;
+    Vector3 originalPos;
     LevelController levelController;
+    objectTaking objectTakingScript;
+    public GameObject fLight;
+    public GameObject cube; 
     public GameObject gameManager;
+    
+    
+    
+    
      private void Start() {
          levelController = gameManager.GetComponent<LevelController>();
+         objectTakingScript = cube.GetComponent<objectTaking>();
+         isThrown = objectTakingScript.objThrown;
+         originalPos = this.GetComponent<Transform>().position;
+         
      }
     void Update()
     {
@@ -43,6 +58,9 @@ public class EnemySee : MonoBehaviour
             }
         }
         transform.Find("MEyes").transform.localEulerAngles = new Vector3(0, EyeScanZ);
+        
+
+
 
 
         RaycastHit hit;
@@ -58,6 +76,7 @@ public class EnemySee : MonoBehaviour
             }
 
         }
+        
     }
     public float speed=10;
     public Transform player;
@@ -76,7 +95,8 @@ public class EnemySee : MonoBehaviour
               {
                  Busted();
               }     
-    }
+        }
    
     }
+    
 }
