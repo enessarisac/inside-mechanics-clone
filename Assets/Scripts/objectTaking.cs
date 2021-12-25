@@ -16,6 +16,7 @@ public class objectTaking : MonoBehaviour
     public bool holding;
     public bool charIsHolding;
     public bool objThrown;
+    
 
 
     // Start is called before the first frame update
@@ -23,7 +24,6 @@ public class objectTaking : MonoBehaviour
     {
         handPosition = rightHand.GetComponent<Transform>().position;
         playerController = character.GetComponent<PlayerController>();
-        charIsHolding = playerController.isHolding;
 
     }
 
@@ -40,9 +40,15 @@ public class objectTaking : MonoBehaviour
         }
         if (other.gameObject.CompareTag("Player"))
         {
+            if (playerController.isHolding == false)
+            {
+                pickUp();
+            }
+            else
+            {
+                drop();
+            }
             
-            pickUp();
-            drop();
             
         }
     }
@@ -50,26 +56,25 @@ public class objectTaking : MonoBehaviour
     //Eðer canPick doðruysa ve oyuncu E'ye basarsa 
     public void pickUp()
     {
-        if (Input.GetKeyDown(KeyCode.E) &&holding == false)
+        if (Input.GetKey(KeyCode.E) &&holding == false)
         {
-
-            holding = true;
-            charIsHolding = true;
-            objThrown = false;
             this.GetComponent<Rigidbody>().isKinematic = true;
             this.GetComponent<BoxCollider>().enabled = false;
+            holding = true;
+            playerController.isHolding = true;
+            objThrown = false;
         }
     }
     //eðer oyuncu eli doluyken Q'ya basarsa objeyi yere býrakma
     public void drop()
     {
-        if (Input.GetKeyDown(KeyCode.Q) && holding == true)
+        if (Input.GetKey(KeyCode.Q) && holding == true)
         {
-            holding = false;
-            charIsHolding = false;
             this.GetComponent<Rigidbody>().isKinematic = false;
             this.GetComponent<BoxCollider>().enabled = true;
             objThrown = false;
+            holding = false;
+            playerController.isHolding = false;
         }
     }
     public void throwObj()
@@ -82,7 +87,7 @@ public class objectTaking : MonoBehaviour
             this.GetComponent<Rigidbody>().AddForce(ta * throwforce);
             this.GetComponent<BoxCollider>().enabled = true;
             holding = false;
-            charIsHolding = false;
+            playerController.isHolding = false;
             objThrown = true;
         }
     }
