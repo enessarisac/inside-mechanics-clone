@@ -14,7 +14,9 @@ public class FieldOfView : MonoBehaviour
     public LayerMask targetMask;
     public LayerMask obstructionMask;
     public bool canSee;
-    
+    public Collider[] rangeChecks;
+
+
     public float turnSpeed;
     
     LevelController levelController;
