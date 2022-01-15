@@ -14,9 +14,12 @@ public class PetSystem : MonoBehaviour
     public LayerMask targetMask;
     public int i;
     public Collider[] objChecks;
+    GameObject selectedObject;
+    
     void Start()
     {
         i = 0;
+        
         StartCoroutine(PetLocation());
         StartCoroutine(GoIntoObjects());
         StartCoroutine(offsetValue());
@@ -38,25 +41,24 @@ public class PetSystem : MonoBehaviour
     {
         while (true)
         {
-            if (objChecks.Length != 0)
-            {
-                
+           
                 if (inObj)
                 {
-                    GameObject selectedObject = objChecks[i].gameObject;
+                    selectedObject = objChecks[i].gameObject;
                     if (this.transform.position == selectedObject.transform.position)
                     {
                         yield return new WaitForSeconds(1);
                     }
                     
                     transform.position = Vector3.SmoothDamp(transform.position, selectedObject.transform.position, ref velocity, smoothTime);
+                    yield return new WaitForSeconds(0.001f);
                 }
                 else
                 {
                     yield return new WaitForSeconds(0.001f);
                 }
-            }
-            yield return new WaitForSeconds(0.5f);
+            
+            
             
         }
     }
@@ -74,13 +76,9 @@ public class PetSystem : MonoBehaviour
     {
         while (true)
         {
-            Collider[] objChecks = Physics.OverlapSphere(transform.position, radius, targetMask);   
-            if (objChecks.Length != 0)
-            {
-                
-                Debug.Log(objChecks.Length);
-            }
-            yield return new WaitForSeconds(0.001f);
+            objChecks = Physics.OverlapSphere(transform.position, radius, targetMask);   
+            
+            yield return new WaitForSeconds(0.01f);
         }
 
     }
@@ -95,6 +93,8 @@ public class PetSystem : MonoBehaviour
             transform.position = Vector3.SmoothDamp(transform.position, player.transform.position+offset, ref velocity, smoothTime);
         
     }
+
+    
     void ControllingPet()
     {
         if (Input.GetKeyDown(KeyCode.R) && objChecks.Length != 0)
@@ -103,25 +103,28 @@ public class PetSystem : MonoBehaviour
         }
         if (inObj && Input.GetKeyDown(KeyCode.T))
         {
-            GameObject selectedObject = objChecks[i].gameObject;
+            selectedObject = objChecks[i].gameObject;
             selectedObject.GetComponent<Light>().enabled = !objChecks[i].gameObject.GetComponent<Light>().enabled;
         }
-        if (i >= objChecks.Length && !inObj)
+        if (!inObj) 
         {
-            i = 0;
-        }
-        if (i + 1 < objChecks.Length && !inObj)
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha2))
+            if (i >= objChecks.Length)
             {
-                i += 1;
+                i = 0;
             }
-        }
-        if (i - 1 >= 0&&!inObj)
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            if (i + 1 < objChecks.Length)
             {
-                i -= 1;
+                if (Input.GetKeyDown(KeyCode.Alpha2))
+                {
+                    i += 1;
+                }
+            }
+            if (i - 1 >= 0 )
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1))
+                {
+                    i -= 1;
+                }
             }
         }
     }
