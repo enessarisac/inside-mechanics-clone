@@ -12,11 +12,11 @@ public class PetSystem : MonoBehaviour
     public bool inObj;
     public float radius;
     public LayerMask targetMask;
-    public int i=0;
-    Collider[] objChecks;
+    public int i;
+    public Collider[] objChecks;
     void Start()
     {
-
+        i = 0;
         StartCoroutine(PetLocation());
         StartCoroutine(GoIntoObjects());
         StartCoroutine(offsetValue());
@@ -43,11 +43,13 @@ public class PetSystem : MonoBehaviour
                 
                 if (inObj)
                 {
-                    if (this.transform.position == objChecks[i].gameObject.transform.position)
+                    GameObject selectedObject = objChecks[i].gameObject;
+                    if (this.transform.position == selectedObject.transform.position)
                     {
                         yield return new WaitForSeconds(1);
                     }
-                    transform.position = Vector3.SmoothDamp(transform.position, objChecks[i].gameObject.transform.position, ref velocity, smoothTime);
+                    
+                    transform.position = Vector3.SmoothDamp(transform.position, selectedObject.transform.position, ref velocity, smoothTime);
                 }
                 else
                 {
@@ -95,26 +97,27 @@ public class PetSystem : MonoBehaviour
     }
     void ControllingPet()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) && objChecks.Length != 0)
         {
             inObj = !inObj;
         }
         if (inObj && Input.GetKeyDown(KeyCode.T))
         {
-            objChecks[i].gameObject.GetComponent<Light>().enabled = !objChecks[i].gameObject.GetComponent<Light>().enabled;
+            GameObject selectedObject = objChecks[i].gameObject;
+            selectedObject.GetComponent<Light>().enabled = !objChecks[i].gameObject.GetComponent<Light>().enabled;
         }
-        if (i >= objChecks.Length)
+        if (i >= objChecks.Length && !inObj)
         {
             i = 0;
         }
-        if (i + 1 < objChecks.Length)
+        if (i + 1 < objChecks.Length && !inObj)
         {
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 i += 1;
             }
         }
-        if (i - 1 >= 0)
+        if (i - 1 >= 0&&!inObj)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
